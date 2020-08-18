@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Adobe Document Services PDF Embed API Sample</title>
+   <meta charset="utf-8" />
+   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+   <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body style="margin: 0px">
+   <div>
+      <button onclick="setDCView('FULL_WINDOW')">FULL_WINDOW</button>
+      <button onclick="setDCView('SIZED_CONTAINER')">SIZED_CONTAINER</button>
+      <button onclick="setDCView('IN_LINE')">IN_LINE</button>
+   </div>
+   <div id="adobe-dc-view"></div>
+   <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+   <script type="text/javascript">
+      function setDCView(mode) {
+         /* Initialize the AdobeDC View object */
+         var adobeDCView = new AdobeDC.View({ clientId: "061d5d0cc80b413f8464715b6edf979a", divId: "adobe-dc-view" });
+         /* Invoke the file preview API on Adobe DC View object */
+         adobeDCView.previewFile(
+            {
+               content: { location: { url: "https://documentcloud.adobe.com/view-sdk-demo/PDFs/Bodea Brochure.pdf" } },
+               metaData: { fileName: "Bodea Brochure.pdf" }
+            },
+            {
+               embedMode: mode,
+               defaultViewMode: "FIT_PAGE",
+               showLeftHandPanel: false
+            });
+         /* Invoke the file preview API on Adobe DC View object */
+         adobeDCView.registerCallback(
+            AdobeDC.View.Enum.CallbackType.EVENT_LISTENER,
+            function (event) {
+               console.log(event.data);
+               switch (event.type) {
+                  case "DOCUMENT_OPEN":
+                     // ga('send', 'event', 'DOCUMENT_OPEN', event.data.fileName, 'open document');
+                     break;
+                  case 'PAGE_VIEW':
+                     // ga('send', 'event', 'PAGE_VIEW', `${event.data.pageNumber} of ${event.data.fileName}`, 'view page');
+                     break;
+                  case 'DOCUMENT_DOWNLOAD':
+                     // ga('send', 'event', 'DOCUMENT_DOWNLOAD', event.data.fileName, 'download document');
+                     break;
+                  case 'TEXT_COPY':
+                     // ga('send', 'event', 'TEXT_COPY', `${event.data.copiedText} of ${event.data.fileName}`, 'copy text');
+                     break;
+               }
+            },
+            {
+               enablePDFAnalytics: true,
+            }
+         );
+      };
+
+      document.addEventListener("adobe_dc_view_sdk.ready", function () {
+         setDCView("FULL_WINDOW");
+      });
+   </script>
+</body>
+
+</html>
